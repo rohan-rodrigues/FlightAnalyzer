@@ -11,6 +11,11 @@
 
 using namespace std;
 
+Airport::Airport(string name) {
+    this->name = name;
+    this->fromAirportData = false;
+}
+
 
 Airport::Airport(string name, string id) {
     this->name = name;
@@ -34,7 +39,6 @@ Airport::~Airport() {
             delete outgoingRoutes[i];
         }
     }
-
 }
 
 void Airport::addOutgoingRoute(Route * route) {

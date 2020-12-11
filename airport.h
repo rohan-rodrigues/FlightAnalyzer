@@ -16,6 +16,7 @@ using namespace std;
 
 class Airport {
 public:
+    Airport(string name);
     Airport(string name, string id);
     Airport(string id, string name, string city, string country, std::pair<int, int> location);
     ~Airport();

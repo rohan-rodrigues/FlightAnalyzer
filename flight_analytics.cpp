@@ -13,32 +13,72 @@
 #include <sstream>
 
 
-//Analytics::Analytics(vector<string> routes_vector) {
-//    vector<Route *> routes;
+Analytics::Analytics(vector<string> routes_vector) {
+    vector<Route *> routes;
+    cout << "Reached " << __LINE__ << endl;
+
+    for (unsigned int i = 0; i < routes_vector.size(); i++) {
+        vector<string> route_content = split(routes_vector[i], ',');
+
+      //  Airline * airline = new Airline(route_content[0], route_content[1]);
+      string airlineCode = route_content[0];
+      string airlineId = route_content[1];
+
+//        Airport sourceAirport = Airport(route_content[2], route_content[3]);
+//        Airport destinationAirport = Airport(route_content[4], route_content[5]);
+        string sourceAirport = route_content[3];
+        if (sourceAirport == "\\N") {
+            continue;
+        }
+        string destinationAirport = route_content[5];
+
+        string stops = route_content[7];
+//        stringstream stopStream(route_content[7]);
+//        int stops = 0;
+//        stopStream >> stops;
+
+        Route * route = new Route(airlineId, airlineCode, sourceAirport, destinationAirport, stops);
+        routes.push_back(route);
+    }
+
+    cout << "Reached " << __LINE__ << endl;
+
+    // sort the list of routes based on airport
+    //vector<Route *> sortedRoutes = routes;
+    sortRoutes(routes);
+    cout << "Reached " << __LINE__ << endl;
+    compileAirports(routes);
+
 //    cout << "Reached " << __LINE__ << endl;
+//
+//    cout << "Unsorted Routes: " << endl;
+//    for (unsigned int i = 0; i < routes.size(); i++) {
+//        cout << routes[i]->getSourceAirport() << endl;
+//    }
+
+}
+
+
+
+
+//Analytics::Analytics(vector<string> routes_vector) {
 //
 //    for (unsigned int i = 0; i < routes_vector.size(); i++) {
 //        vector<string> route_content = split(routes_vector[i], ',');
+//        string airlineCode = route_content[0];
+//        string airlineId = route_content[1];
 //
-//      //  Airline * airline = new Airline(route_content[0], route_content[1]);
-//      string airlineCode = route_content[0];
-//      string airlineId = route_content[1];
-//
-////        Airport sourceAirport = Airport(route_content[2], route_content[3]);
-////        Airport destinationAirport = Airport(route_content[4], route_content[5]);
 //        string sourceAirport = route_content[3];
 //        if (sourceAirport == "\\N") {
 //            continue;
 //        }
 //        string destinationAirport = route_content[5];
-//
 //        string stops = route_content[7];
-////        stringstream stopStream(route_content[7]);
-////        int stops = 0;
-////        stopStream >> stops;
 //
 //        Route * route = new Route(airlineId, airlineCode, sourceAirport, destinationAirport, stops);
-//        routes.push_back(route);
+//        Airport * airport = new Airport(route_content[2], sourceAirport);
+////        if airports.contain()
+//        airports.push_back(airport);
 //    }
 //
 //    cout << "Reached " << __LINE__ << endl;
@@ -57,46 +97,6 @@
 ////    }
 //
 //}
-
-
-
-
-Analytics::Analytics(vector<string> routes_vector) {
-
-    for (unsigned int i = 0; i < routes_vector.size(); i++) {
-        vector<string> route_content = split(routes_vector[i], ',');
-        string airlineCode = route_content[0];
-        string airlineId = route_content[1];
-
-        string sourceAirport = route_content[3];
-        if (sourceAirport == "\\N") {
-            continue;
-        }
-        string destinationAirport = route_content[5];
-        string stops = route_content[7];
-
-        Route * route = new Route(airlineId, airlineCode, sourceAirport, destinationAirport, stops);
-        Airport * airport = new Airport(route_content[2], sourceAirport);
-//        if airports.contain()
-        airports.push_back(airport);
-    }
-
-    cout << "Reached " << __LINE__ << endl;
-
-    // sort the list of routes based on airport
-    //vector<Route *> sortedRoutes = routes;
-    sortRoutes(routes);
-    compileAirports(routes);
-    cout << "Reached " << __LINE__ << endl;
-
-//    cout << "Reached " << __LINE__ << endl;
-//
-//    cout << "Unsorted Routes: " << endl;
-//    for (unsigned int i = 0; i < routes.size(); i++) {
-//        cout << routes[i]->getSourceAirport() << endl;
-//    }
-
-}
 
 
 
@@ -130,10 +130,10 @@ void Analytics::compileAirports(vector<Route *> & routes) {
 
     cout << "Reached " << __LINE__ << endl;
 
-        cout << "Airport List: " << endl;
-        for (unsigned int i = 0; i < airports.size(); i++) {
-            cout << airports[i]->getId() << endl;
-        }
+//        cout << "Airport List: " << endl;
+//        for (unsigned int i = 0; i < airports.size(); i++) {
+//            cout << airports[i]->getId() << endl;
+//        }
 }
 
 
