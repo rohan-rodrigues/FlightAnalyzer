@@ -1,5 +1,5 @@
 EXENAME = finalproj
-OBJS = readFromFile.o main.o
+OBJS = readFromFile.o main.o airline.o airport.o flight_analytics.o route.o
 
 CXX = clang++
 CXXFLAGS = $(CS225) -std=c++1y -stdlib=libc++ -c -g -O0 -Wall -Wextra -pedantic
@@ -38,3 +38,4 @@ test: output_msg catch/catchmain.cpp tests/tests.cpp readFromFile.cpp
 
 clean:
 	-rm -f *.o $(EXENAME) test
+
