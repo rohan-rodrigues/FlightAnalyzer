@@ -15,17 +15,11 @@
 
 Analytics::Analytics(vector<string> routes_vector) {
     vector<Route *> routes;
-    cout << "Reached " << __LINE__ << endl;
 
     for (unsigned int i = 0; i < routes_vector.size(); i++) {
         vector<string> route_content = split(routes_vector[i], ',');
-
-      //  Airline * airline = new Airline(route_content[0], route_content[1]);
-      string airlineCode = route_content[0];
-      string airlineId = route_content[1];
-
-//        Airport sourceAirport = Airport(route_content[2], route_content[3]);
-//        Airport destinationAirport = Airport(route_content[4], route_content[5]);
+        string airlineCode = route_content[0];
+        string airlineId = route_content[1];
         string sourceAirport = route_content[3];
         if (sourceAirport == "\\N") {
             continue;
@@ -33,83 +27,15 @@ Analytics::Analytics(vector<string> routes_vector) {
         string destinationAirport = route_content[5];
 
         string stops = route_content[7];
-//        stringstream stopStream(route_content[7]);
-//        int stops = 0;
-//        stopStream >> stops;
-
         Route * route = new Route(airlineId, airlineCode, sourceAirport, destinationAirport, stops);
         routes.push_back(route);
     }
-
-    cout << "Reached " << __LINE__ << endl;
-
-    // sort the list of routes based on airport
-    //vector<Route *> sortedRoutes = routes;
     sortRoutes(routes);
-    cout << "Reached " << __LINE__ << endl;
     compileAirports(routes);
-
-//    cout << "Reached " << __LINE__ << endl;
-//
-//    cout << "Unsorted Routes: " << endl;
-//    for (unsigned int i = 0; i < routes.size(); i++) {
-//        cout << routes[i]->getSourceAirport() << endl;
-//    }
-
 }
 
 
-
-
-//Analytics::Analytics(vector<string> routes_vector) {
-//
-//    for (unsigned int i = 0; i < routes_vector.size(); i++) {
-//        vector<string> route_content = split(routes_vector[i], ',');
-//        string airlineCode = route_content[0];
-//        string airlineId = route_content[1];
-//
-//        string sourceAirport = route_content[3];
-//        if (sourceAirport == "\\N") {
-//            continue;
-//        }
-//        string destinationAirport = route_content[5];
-//        string stops = route_content[7];
-//
-//        Route * route = new Route(airlineId, airlineCode, sourceAirport, destinationAirport, stops);
-//        Airport * airport = new Airport(route_content[2], sourceAirport);
-////        if airports.contain()
-//        airports.push_back(airport);
-//    }
-//
-//    cout << "Reached " << __LINE__ << endl;
-//
-//    // sort the list of routes based on airport
-//    //vector<Route *> sortedRoutes = routes;
-//    sortRoutes(routes);
-//    compileAirports(routes);
-//    cout << "Reached " << __LINE__ << endl;
-//
-////    cout << "Reached " << __LINE__ << endl;
-////
-////    cout << "Unsorted Routes: " << endl;
-////    for (unsigned int i = 0; i < routes.size(); i++) {
-////        cout << routes[i]->getSourceAirport() << endl;
-////    }
-//
-//}
-
-
-
-
-
-
-
-
-
-
-
 void Analytics::compileAirports(vector<Route *> & routes) {
-    cout << "Reached " << __LINE__ << endl;
     Airport * currentAirport;
     for (unsigned int i = 0; i < routes.size(); i++) {
         string airportId = routes[i]->getSourceAirport();
@@ -127,45 +53,128 @@ void Analytics::compileAirports(vector<Route *> & routes) {
             currentAirport->addOutgoingRoute(routes[i]);
         }
     }
-
-    cout << "Reached " << __LINE__ << endl;
-
-//        cout << "Airport List: " << endl;
-//        for (unsigned int i = 0; i < airports.size(); i++) {
-//            cout << airports[i]->getId() << endl;
-//        }
+        Airport * t = airports[0];
+        for (unsigned int i = 0; i < t->getOutgoingRoutes().size(); i++) {
+            cout << t->getOutgoingRoutes()[i]->getAirlineId() << endl;
+        }
 }
 
 
 
+// BFS algorithm that traverses the graph of Airport Nodes and Route edges to find all airlines
+vector<string> Analytics::get_airlines() {
+    if (airports.size() == 0) return vector<string>();
 
-vector<Airport> Analytics::get_airports() {
-//    if (routes.size() == 0) return vector<Airport>();
-//
-//    vector<Route> bfs;
-//    vector<bool> visited;
-//    vector<Airport> airports;
-//
-//    for (int i = 0; i < routes.size(); i++) {
-//        visited.push_back(false);
-//    }
-//
-//    bfs.push_back(0);
-//    visited[0] = true;
+    vector<int> bfs;
+    vector<bool> visited;
+    vector<string> airlines;
 
-//    while (!bfs.empty()) {
-//        currentIndex = bfs.front();
-//        bfs.pop();
-//        visited[currentIndex] = true;
-//
-//        for (int i = 0; i < )
-//
-////        for all neighbours w of v in Graph G
-////        if w is not visited
-////        Q.enqueue( w )
-//    }
-    return vector<Airport>();
+    for (unsigned int i = 0; i < airports.size(); i++) {
+        visited.push_back(false);
+    }
+
+    bfs.push_back(0);
+    visited[0] = true;
+    int currentIndex = 0;
+
+    while (!bfs.empty()) {
+        currentIndex = bfs.front();
+        bfs.pop_back();
+        visited[currentIndex] = true;
+
+        vector<Route *> & routes = airports[currentIndex]->getOutgoingRoutes();
+        for (unsigned int i = 0; i < routes.size(); i++) {
+            string airlineCode = routes[i]->getAirlineCode();
+            if (!std::count(airlines.begin(), airlines.end(), airlineCode)) {
+                airlines.push_back(airlineCode);
+            }
+
+            Airport * a = getAirportById(routes[i]->getDestinationAirport());
+            int aIndex = getIndexOfAirport(a);
+            if (!visited[aIndex]) {
+                bfs.push_back(aIndex);
+                visited[aIndex] = true;
+            }
+
+        }
+
+    }
+
+
+    return airlines;
 }
+
+
+
+// Djikstra's Algorithm - finds the quickest path from one airport to another that minimizes the total amount of distance traveled
+vector<string> Analytics::getQuickestFlightPath(string airportA, string airportB) {
+    if (airports.size() == 0) return vector<string>();
+
+    //vector<int> traversal;
+    PriorityQueue<Integer> distancePriorityQueue = new PriorityQueue<>();
+    vector<bool> visited;
+    vector<int> previousSteps;
+    vector<int> distances;
+
+    for (int i = 0; i < airports.size(); i++) {
+        visited.push_back(false);
+        distances.push_back(INT_MAX);
+        previousSteps.push_back(-1);
+    }
+
+    int indexOfSource = findAirportIndex(airportA);
+    int indexOfDestination = findAirportIndex(airportB);
+
+    distances[indexOfSource] = 0;
+    distancePriorityQueue.push(indexOfSource);
+    visited[indexOfSource] = true;
+    int currentIndex = indexOfSource;
+
+    while (bfs.front() != indexOfDestination) {
+        currentIndex = bfs.front();
+        bfs.pop();
+        vector<Route *> routes = airports[currentIndex].getRoutes();
+        visited[currentIndex] = true;
+
+
+        for (int i = 0; i < routes.size(); i++) {
+            Airport a = getAirport(routes[i]->getDestinationAirport());
+
+            int distance = 5;
+            // write code to use airport data to get distance
+
+            int aIndex = airports.indexOf(a);
+            if (!visited[aIndex]) {
+                bfs.push_back(aIndex);
+                visited[aIndex] = true;
+                distances[aIndex] = distances[currentIndex] + distance;
+                previousSteps[aIndex] = currentIndex;
+            }
+            else {
+                if (distances[currentIndex] + distance < distances[aIndex]) {
+                    distances[aIndex] = distances[currentIndex] + distance;
+                    previousSteps[aIndex] = currentIndex;
+                }
+            }
+
+        }
+
+    }
+
+
+    vector<string> finalPath;
+    int current_index = indexOfDestination;
+    while (current_index != indexOfSource) {
+        finalPath.push_back(getAirportName(current_index));
+        current_index = previousSteps[current_index];
+    }
+
+    finalPath.push_back(getAirportName(current_index));
+    std::reverse(finalPath.begin(),finalPath.end());
+    return finalPath;
+}
+
+
 
 
 // sort the routes based on source airport ID
@@ -209,10 +218,39 @@ vector<string> Analytics::split(string s, char delim) {
 
 
 Analytics::~Analytics() {
-//   for (unsigned int i = 0; i < routes.size(); i++) {
-//       delete routes[i];
-//   }
     for (unsigned int i = 0; i < airports.size(); i++) {
         delete airports[i];
     }
+}
+
+
+Airport * Analytics::getAirportById(string id) {
+    for (unsigned int i = 0; i < airports.size(); i++) {
+        if (airports[i]->getId() == id) {
+            return airports[i];
+        }
+    }
+    return nullptr;
+}
+
+
+int Analytics::getIndexOfAirport(Airport * a) {
+    return binarySearch(airports, 0, airports.size() - 1, a);
+}
+
+// Inspiration for code from https://www.geeksforgeeks.org/binary-search/
+int Analytics::binarySearch(vector<Airport *> airports, int l, int r, Airport * target) {
+    if (r >= l) {
+        int mid = l + (r - l) / 2;
+
+        if (airports[mid] == target)
+            return mid;
+
+        if (airports[mid] > target)
+            return binarySearch(airports, l, mid - 1, target);
+
+        return binarySearch(airports, mid + 1, r, target);
+    }
+
+    return -1;
 }

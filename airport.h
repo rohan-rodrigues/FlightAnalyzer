@@ -16,13 +16,16 @@ using namespace std;
 
 class Airport {
 public:
-    Airport(string name);
+    Airport(string id);
     Airport(string name, string id);
     Airport(string id, string name, string city, string country, std::pair<int, int> location);
     ~Airport();
 
+    Airport & operator=(const Airport &a);
+
     void addOutgoingRoute(Route * route);
     string getId();
+    vector<Route *> & getOutgoingRoutes();
 
 private:
     string id;

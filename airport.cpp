@@ -49,3 +49,7 @@ void Airport::addOutgoingRoute(Route * route) {
 string Airport::getId() {
     return id;
 }
+
+vector<Route *> & Airport::getOutgoingRoutes() {
+    return outgoingRoutes;
+}

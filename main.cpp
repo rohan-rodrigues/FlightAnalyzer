@@ -22,5 +22,11 @@ int main(int argc, const char * argv[]) {
 
     vector<string> vectorRepr = file_to_vector(argv[1]);
     Analytics * a = new Analytics(vectorRepr);
+ //   vector<string> airlines = a->get_airlines();
+
+//    for (auto word : airlines) {
+//		std::cout << word << std::endl;
+//	}
+
     delete a;
 }
